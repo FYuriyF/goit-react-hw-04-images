@@ -18,6 +18,7 @@ const App = () => {
   const [imageName, setImageName] = useState('');
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
+  // eslint-disable-next-line no-unused-vars
   const [showButton, setShowButton] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState(Status.IDLE);
