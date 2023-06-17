@@ -31,8 +31,7 @@ const App = () => {
       setStatus(Status.PENDING);
 
       try {
-        const data = await apiService(imageName, page);
-        const { hits, totalHits } = data;
+        const { hits, totalHits } = await apiService(imageName, page);
 
         if (!hits || !Array.isArray(hits)) {
           setStatus(Status.IDLE);
