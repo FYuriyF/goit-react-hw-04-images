@@ -18,12 +18,11 @@ const App = () => {
   const [imageName, setImageName] = useState('');
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
-  // eslint-disable-next-line no-unused-vars
   const [showButton, setShowButton] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState(Status.IDLE);
   const [modalImage, setModalImage] = useState('');
   const [imageAlt, setImageAlt] = useState('');
+  const [showModal, setShowModal] = useState(false); // Добавлено объявление переменной showModal
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,18 +31,19 @@ const App = () => {
       setStatus(Status.PENDING);
 
       try {
-        const response = await apiService(imageName, page);
+        const data = await apiService(imageName, page);
+        const { hits, totalHits } = data;
 
-        if (!response || !Array.isArray(response)) {
-          setShowButton(false);
+        if (!hits || !Array.isArray(hits)) {
           setStatus(Status.IDLE);
           return alert('No images found for your query.');
         }
 
-        const hits = response;
-        const total = response.length;
         setImages(prevImages => [...prevImages, ...hits]);
-        setShowButton(page < Math.ceil(total / 12));
+        setShowButton(page * 12 < totalHits);
+        if (page * 12 >= totalHits) {
+          setShowButton(false);
+        }
         setStatus(Status.RESOLVED);
       } catch (error) {
         console.log(error);
@@ -62,7 +62,6 @@ const App = () => {
     setImageName(imageName);
     setPage(1);
     setImages([]);
-    setShowButton(false);
     setShowModal(false);
     setStatus(Status.IDLE);
   };
@@ -98,7 +97,7 @@ const App = () => {
           handleModalAlt={handleModalAlt}
         />
       )}
-      {status === Status.RESOLVED && images.length > 0 && (
+      {status === Status.RESOLVED && images.length > 0 && showButton && (
         <Button onLoadMore={loadMoreImages} />
       )}
 
